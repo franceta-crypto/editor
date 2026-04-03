@@ -10,37 +10,39 @@
 <body>
   <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
     <script>
-     tinymce.init({
-          selector: 'textarea',
-          toolbar: 'blocks bold italic',
-          block_formats: 'Paragrafo=p; Titolo 1=h1; Titolo 2=h2',
-        
-          setup: function (editor) {
-        
-            // 👉 Quando carica contenuto (shortcode → HTML)
-            editor.on('BeforeSetContent', function (e) {
-              if (e.content) {
-                e.content = e.content
-                  .replace(/\[p\]/g, '<p>')
-                  .replace(/\[\/p\]/g, '</p>');
-              }
-            });
-        
-            // 👉 Quando salvi (HTML → shortcode)
-            editor.on('GetContent', function (e) {
-              if (e.content) {
-                e.content = e.content
-                  .replace(/<p>/g, '[p]')
-                  .replace(/<\/p>/g, '[/p]');
-              }
-            });
+      tinymce.init({
+        selector: 'textarea',
+        toolbar: 'blocks bold italic',
+        block_formats: 'Paragrafo=p; Titolo 1=h1; Titolo 2=h2',
+      
+        setup: function (editor) {
+      
+          editor.on('BeforeSetContent', function (e) {
+            if (e.content) {
+              e.content = e.content
+                .replace(/\[p\]/g, '<p>')
+                .replace(/\[\/p\]/g, '</p>');
+            }
+          });
+      
+          editor.on('GetContent', function (e) {
+            if (e.content) {
+              e.content = e.content
+                .replace(/<p>/g, '[p]')
+                .replace(/<\/p>/g, '[/p]');
+            }
+          });
+      
+        }, // ✅ ← QUI serviva questa virgola
+      
         tinymceai_token_provider: async () => {
           await fetch(`https://demo.api.tiny.cloud/1/dm8genvcpcrcmxelwkcf9bartu371cztvq627omqo586ujd3/auth/random`, { method: "POST", credentials: "include" });
           return { token: await fetch(`https://demo.api.tiny.cloud/1/dm8genvcpcrcmxelwkcf9bartu371cztvq627omqo586ujd3/jwt/tinymceai`, { credentials: "include" }).then(r => r.text()) };
         },
-        uploadcare_public_key: 'e6c6c51aa64731ff8063',
+      
+        uploadcare_public_key: 'e6c6c51aa64731ff8063'
       });
-    </script>
+      </script>
     <textarea>
       Welcome to TinyMCE!
     </textarea>
