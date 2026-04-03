@@ -10,23 +10,34 @@
 <body>
   <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
     <script>
-      tinymce.init({
-        selector: 'textarea',
-        format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
-        plugins: [
-          // Core editing features
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-          // Your account includes a free trial of TinyMCE premium features
-          // Try the most popular premium features until Apr 18, 2026:
-          'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'tinymceai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-        ],
-        toolbar: 'undo redo | tinymceai-chat tinymceai-quickactions tinymceai-review | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-        tinycomments_mode: 'embedded',
-        tinycomments_author: 'Author name',
-        mergetags_list: [
-          { value: 'First.Name', title: 'First Name' },
-          { value: 'Email', title: 'Email' },
-        ],
+     tinymce.init({
+  selector: 'textarea',
+  toolbar: 'blocks bold italic',
+
+  block_formats: 'Paragrafo=p; Titolo 1=h1; Titolo 2=h2',
+
+  setup: function (editor) {
+
+    // 👉 Quando carica contenuto (shortcode → HTML)
+    editor.on('BeforeSetContent', function (e) {
+      if (e.content) {
+        e.content = e.content
+          .replace(/\[p\]/g, '<p>')
+          .replace(/\[\/p\]/g, '</p>');
+      }
+    });
+
+    // 👉 Quando salvi (HTML → shortcode)
+    editor.on('GetContent', function (e) {
+      if (e.content) {
+        e.content = e.content
+          .replace(/<p>/g, '[p]')
+          .replace(/<\/p>/g, '[/p]');
+      }
+    });
+
+  }
+});
         tinymceai_token_provider: async () => {
           await fetch(`https://demo.api.tiny.cloud/1/dm8genvcpcrcmxelwkcf9bartu371cztvq627omqo586ujd3/auth/random`, { method: "POST", credentials: "include" });
           return { token: await fetch(`https://demo.api.tiny.cloud/1/dm8genvcpcrcmxelwkcf9bartu371cztvq627omqo586ujd3/jwt/tinymceai`, { credentials: "include" }).then(r => r.text()) };
